@@ -1,43 +1,57 @@
-import { useState } from 'react';
-import { Box, Button, Modal, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Button, Modal, Stack, Typography } from '@mui/material';
 
 import { styleModal } from './style';
 
-export default function KeepMountedModal() {
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
+const NonPhoto = ({ message, handleYes, handleClose }: any) => {
   return (
-    <div>
-      <Button onClick={handleOpen}>Open modal</Button>
-      <Modal
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="keep-mounted-modal-title"
-        aria-describedby="keep-mounted-modal-description"
-      >
-        <Box sx={styleModal}>
-          <Typography id="keep-mounted-modal-title" variant="h6" component="h2" textAlign='center'>
-            Confirmation
-          </Typography>
-          <Typography id="keep-mounted-modal-description" sx={{ mt: 2 }} textAlign='center'>
-            Are you sure to make changes to this data?
-          </Typography>
-          <Stack
-            direction="row"
-            spacing={2}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            mt={5}>
-            <Button variant="contained" type="submit" sx={{ width: '100px' }}>Yes</Button>
-            <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleClose}>No</Button>
-          </Stack>
-        </Box>
-      </Modal>
-    </div>
+    <>
+      <Typography id="modal-title" variant="h6" component="h2" textAlign='center'>
+        Confirmation
+      </Typography>
+      <Typography id="modal-description" sx={{ mt: 2 }} textAlign='center'>
+        {message}
+        {/* // Are you sure to make changes to this data? */}
+      </Typography>
+      <Stack
+        direction="row"
+        spacing={2}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        mt={5}>
+        <Button variant="contained" type="submit" sx={{ width: '100px' }} onClick={handleYes}>Yes</Button>
+        <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleClose}>No</Button>
+        {/* <Button variant="contained" type="submit" sx={{ width: '100px' }} onClick={handleOK}>OK</Button> */}
+      </Stack>
+    </>
+  )
+}
+
+const Photo = ({ srcPhoto }: any) => {
+  return (
+    <Box sx={{
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
+      <Avatar src={srcPhoto} alt='photo preview' sx={{ width: 200, height: 200 }} variant="square" />
+    </Box>
+  )
+}
+
+export default function KeepMountedModal({ message, open, handleClose, handleYes, srcPhoto, modalType }: any) {
+  return (
+    <Modal
+      keepMounted
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <Box sx={styleModal}>
+        {modalType !== 'photo' && <NonPhoto message={message} handleYes={handleYes} handleClose={handleClose} />}
+        {modalType === 'photo' && <Photo srcPhoto={srcPhoto} />}
+      </Box>
+    </Modal>
   );
 }

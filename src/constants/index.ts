@@ -4,3 +4,4 @@ export const METHOD = {
   PUT: 'PUT',
   DELETE: 'DELETE'
 }
+export const APP_NAME = 'Contact Apps';
