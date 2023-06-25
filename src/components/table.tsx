@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, IconButton, Paper, Stack, Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { Edit as EditIcon, DeleteForever as DeleteForeverIcon } from '@mui/icons-material';
 
-import { StyledTableCell, StyledTableRow } from './style';
-import KeepMountedModal from './modal';
 import deleteContact from '../api/deleteContact';
 import { toggleLoader } from '../redux/slice/commonSlice';
+import { StyledTableCell, StyledTableRow } from './style';
+import KeepMountedModal from './modal';
 
-export default function BasicTable({ list }: any) {
+export default function BasicTable({ list, startNo }: any) {
   const navigate = useNavigate();
   const dispatch = useDispatch()
 
@@ -75,7 +75,7 @@ export default function BasicTable({ list }: any) {
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
-                <StyledTableCell align="center">{index + 1}</StyledTableCell>
+                <StyledTableCell align="center">{startNo + index + 1}</StyledTableCell>
                 <StyledTableCell component="th" scope="row" align="center" sx={{
                   display: "flex",
                   justifyContent: "center",

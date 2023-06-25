@@ -1,39 +1,57 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { CircularProgress, Pagination } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { Box, CircularProgress, Pagination } from '@mui/material';
 
 import { getContact } from '../api/getContact';
-import { ListContactProps, getContactResponse } from '../types/ListContactProps';
+import { ListContactProps } from '../types/ListContactProps';
 import DataTable from '../components/table';
-import { toggleLoader } from '../redux/slice/commonSlice';
 import { RootState } from '../store';
 import '../App.css';
 
+const PAGE_SIZE = 10;
+
 const ListContact = () => {
   const isLoading = useSelector((state: RootState) => state.common.showLoader)
-  const dispatch = useDispatch()
 
   const [list, setList] = useState<ListContactProps[]>([]);
+  const [totalData, setTotalData] = useState(0);
+  const [page, setPage] = useState(1);
 
-  const callGetContact = async () => {
-    dispatch(toggleLoader(true));
+  const handleChange = async (_event: React.ChangeEvent<unknown>, value: number) => {
+    await setPage(value);
+  };
+
+  const callGetContact = async (pageNo: number) => {
     const response = await getContact() as any;
-    await setList(response?.data?.data ?? []); // .slice(0, 10));
-    dispatch(toggleLoader(false));
+    await setList(response?.data?.data.slice(pageNo * PAGE_SIZE - PAGE_SIZE, page * PAGE_SIZE) ?? []);
+    await setTotalData(response?.data?.data.length);
   }
 
   useEffect(() => {
-    callGetContact();
-  }, [])
+    callGetContact(page);
+  }, [page]);
+
+  const setTotalPage = () => {
+    return totalData % PAGE_SIZE > 0 ? Math.ceil(totalData / PAGE_SIZE) : totalData / PAGE_SIZE;
+  }
 
   return (
     <div className="App">
       {isLoading && <CircularProgress />}
       {!isLoading && <>
-        <DataTable list={list} />
-        <Pagination count={list.length / 10} color="primary" sx={{ marginY: 5 }} />
+        <DataTable list={list} startNo={page * PAGE_SIZE - PAGE_SIZE} />
+        <Box
+          sx={{
+            flexGrow: 1,
+            justifyContent: "center",
+            display: "flex",
+            mb: 2,
+          }}
+        >
+          <Pagination count={setTotalPage()} color="primary" sx={{ marginY: 5 }} onChange={handleChange} page={page} />
+        </Box>
       </>
       }
     </div>
