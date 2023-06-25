@@ -34,12 +34,12 @@ const FormContact = () => {
   const handleClose = () => setOpen(false);
 
   const onSubmit: SubmitHandler<any> = async () => {
-    await setMessage('Are You Sure To Save?');
+    await setMessage('Are you sure to save this changes?');
     await handleOpen();
   }
 
   const handleYes = async () => {
-    if (message === 'Are You Sure?') {
+    if (message === 'Are you sure?') {
       navigate('/');
       return;
     }
@@ -49,7 +49,7 @@ const FormContact = () => {
 
     const response = await postContact(values) as any;
     if (response?.status === HttpStatusCode.Created) {
-      await setMessage('Successully Added, this message will disappear in 2 seconds');
+      await setMessage('Successully added, this message will disappear in 2 seconds');
       setTimeout(async () => {
         await handleClose();
         dispatch(toggleLoader(false));

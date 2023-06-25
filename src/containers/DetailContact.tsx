@@ -10,10 +10,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import { ListContactProps } from '../types/ListContactProps';
 import { getContactByID } from '../api/getContact';
+import putContact from '../api/putContact';
 import KeepMountedModal from '../components/modal';
 import ListContactHeader from './ListContactHeader';
 import schema from '../schemas/contact';
-import putContact from '../api/putContact';
 import { RootState } from '../store';
 import { toggleLoader } from '../redux/slice/commonSlice';
 
@@ -42,10 +42,10 @@ const DetailContact = () => {
   const handleClose = () => setOpen(false);
 
   const mappingValue = (response: any) => {
-    setValue('firstName', response.data.data.firstName);
-    setValue('lastName', response.data.data.lastName);
-    setValue('age', response.data.data.age);
-    setValue('photo', response.data.data.photo);
+    setValue('firstName', response?.data?.data?.firstName);
+    setValue('lastName', response?.data?.data?.lastName);
+    setValue('age', response?.data?.data?.age);
+    setValue('photo', response?.data?.data?.photo);
   }
 
   const callGetContactDetail = async () => {
@@ -61,12 +61,12 @@ const DetailContact = () => {
   }, [])
 
   const onSubmit: SubmitHandler<any> = async () => {
-    await setMessage('Are You Sure To Save?');
+    await setMessage('Are you sure to save this changes?');
     await handleOpen();
   }
 
   const handleYes = async () => {
-    if (message === 'Are You Sure?') {
+    if (message === 'Are you sure?') {
       navigate('/');
       return;
     }
@@ -76,7 +76,7 @@ const DetailContact = () => {
     const values = getValues();
     const response = await putContact(values, id) as any;
     if (response?.status === HttpStatusCode.Created) {
-      await setMessage('Successully Updated, this message will disappear in 2 seconds');
+      await setMessage('Successully updated, this message will disappear in 2 seconds');
       setTimeout(async () => {
         await handleClose();
         dispatch(toggleLoader(false));

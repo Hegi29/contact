@@ -2,7 +2,7 @@ import { TableCell, TableRow, styled, tableCellClasses } from "@mui/material";
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#20a4dc',// theme.palette.common.black,
+    backgroundColor: '#20a4dc',
     color: theme.palette.common.white,
   },
   [`&.${tableCellClasses.body}`]: {
@@ -14,7 +14,6 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:nth-of-type(odd)': {
     backgroundColor: theme.palette.action.hover,
   },
-  // hide last border
   '&:last-child td, &:last-child th': {
     border: 0,
   },

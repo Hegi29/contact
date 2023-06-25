@@ -2,6 +2,10 @@ import { Avatar, Box, Button, Modal, Stack, Typography } from '@mui/material';
 
 import { styleModal } from './style';
 
+export type NonPhotoProps = { message: string, handleYes: () => void, handleClose: () => void }
+export type ModalProps = { message: string, open: boolean, handleClose: () => void, handleYes: () => void, srcPhoto?: string, modalType?: string }
+export type PhotoProps = { srcPhoto: string };
+
 const NonPhoto = ({ message, handleYes, handleClose }: any) => {
   return (
     <>
@@ -27,7 +31,7 @@ const NonPhoto = ({ message, handleYes, handleClose }: any) => {
   )
 }
 
-const Photo = ({ srcPhoto }: any) => {
+const Photo = ({ srcPhoto }: PhotoProps) => {
   return (
     <Box sx={{
       display: "flex",
@@ -39,7 +43,7 @@ const Photo = ({ srcPhoto }: any) => {
   )
 }
 
-export default function KeepMountedModal({ message, open, handleClose, handleYes, srcPhoto, modalType }: any) {
+export default function KeepMountedModal({ message, open, handleClose, handleYes, srcPhoto, modalType }: ModalProps) {
   return (
     <Modal
       keepMounted

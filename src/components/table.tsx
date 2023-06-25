@@ -9,8 +9,11 @@ import deleteContact from '../api/deleteContact';
 import { toggleLoader } from '../redux/slice/commonSlice';
 import { StyledTableCell, StyledTableRow } from './style';
 import KeepMountedModal from './modal';
+import { ListContactProps } from '../types/ListContactProps';
 
-export default function BasicTable({ list, startNo }: any) {
+export type DataTableProps = { list: ListContactProps[], startNo: number };
+
+export default function DataTable({ list, startNo }: DataTableProps) {
   const navigate = useNavigate();
   const dispatch = useDispatch()
 
@@ -19,8 +22,6 @@ export default function BasicTable({ list, startNo }: any) {
   const [idDelete, setIDDelete] = useState('');
   const [srcPhoto, setSrcPhoto] = useState('');
   const [modalType, setModalType] = useState('');
-
-  const handleOpen = () => setOpen(true);
 
   const handleClose = () => setOpen(false);
 
@@ -31,7 +32,7 @@ export default function BasicTable({ list, startNo }: any) {
   const handleDelete = async (id: string, name: string) => {
     await setIDDelete(id);
     await setMessage(`Are You Sure to Delete ${name}?`);
-    await handleOpen();
+    await setOpen(true);
   }
 
   const handleYes = async () => {
@@ -40,7 +41,7 @@ export default function BasicTable({ list, startNo }: any) {
     if (response?.status === HttpStatusCode.Created || response?.status === HttpStatusCode.Ok) {
       await setMessage('Successully Deleted, this message will disappear in 2 seconds');
       setTimeout(async () => {
-        await handleClose();
+        await setOpen(false);
         dispatch(toggleLoader(false));
         navigate('/');
       }, 2000)
@@ -51,7 +52,7 @@ export default function BasicTable({ list, startNo }: any) {
   const handlePreviewPhoto = async (src: string) => {
     await setModalType('photo');
     await setSrcPhoto(src);
-    await handleOpen();
+    await setOpen(true);
   }
 
   return (

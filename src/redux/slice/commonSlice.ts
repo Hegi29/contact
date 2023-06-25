@@ -24,7 +24,6 @@ export const counterSlice = createSlice({
   },
 })
 
-// Action creators are generated for each case reducer function
 export const { toggleModal, toggleLoader } = counterSlice.actions
 
 export default counterSlice.reducer
