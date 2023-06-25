@@ -1,3 +1,5 @@
+import { HttpStatusCode } from 'axios';
+import { useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, IconButton, Paper, Stack, Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
@@ -5,17 +7,21 @@ import { Edit as EditIcon, DeleteForever as DeleteForeverIcon } from '@mui/icons
 
 import { StyledTableCell, StyledTableRow } from './style';
 import KeepMountedModal from './modal';
+import deleteContact from '../api/deleteContact';
+import { toggleLoader } from '../redux/slice/commonSlice';
 
 export default function BasicTable({ list }: any) {
   const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [, setIDDelete] = useState('');
+  const [idDelete, setIDDelete] = useState('');
   const [srcPhoto, setSrcPhoto] = useState('');
   const [modalType, setModalType] = useState('');
 
   const handleOpen = () => setOpen(true);
+
   const handleClose = () => setOpen(false);
 
   const handleEdit = (id: string) => {
@@ -29,12 +35,17 @@ export default function BasicTable({ list }: any) {
   }
 
   const handleYes = async () => {
-    await setMessage('Successully Deleted, this message will disappear in 2 seconds');
-    setTimeout(async () => {
-      // disini panggil api delete
-      await handleClose();
-      // reload data
-    }, 2000)
+    const response = await deleteContact(idDelete) as any;
+
+    if (response?.status === HttpStatusCode.Created || response?.status === HttpStatusCode.Ok) {
+      await setMessage('Successully Deleted, this message will disappear in 2 seconds');
+      setTimeout(async () => {
+        await handleClose();
+        dispatch(toggleLoader(false));
+        navigate('/');
+      }, 2000)
+      return;
+    }
   }
 
   const handlePreviewPhoto = async (src: string) => {
@@ -59,7 +70,7 @@ export default function BasicTable({ list }: any) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {list.map((row: any, index: number) => (
+            {list?.map((row: any, index: number) => (
               <StyledTableRow
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

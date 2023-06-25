@@ -1,19 +1,15 @@
-import { URL_API, METHOD } from "../constants";
+import axios from "axios";
 
-const deleteContact = (id: string) => {
+import { URL_API } from "../constants";
+
+const deleteContact = async (id: string) => {
   const url = `${URL_API}/contact/${id}`;
-  const options = {
-    method: METHOD.DELETE
-  };
 
-  return fetch(url, options)
-    .then(response => response.json())
-    .then(json => {
-      return json;
-    })
-    .catch(error => {
-      console.error(error);// bikin modal
-    });
+  try {
+    return await axios.delete(url);
+  } catch (error) {
+    return error;
+  }
 };
 
 export default deleteContact

@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { HttpStatusCode } from 'axios';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Stack, Button, Box, TextField, Typography, CircularProgress } from '@mui/material';
@@ -8,6 +10,8 @@ import schema from '../schemas/contact';
 import KeepMountedModal from '../components/modal';
 import ListContactHeader from './ListContactHeader';
 import postContact from '../api/postContact';
+import { toggleLoader } from '../redux/slice/commonSlice';
+import { RootState } from '../store';
 
 const FormContact = () => {
   const navigate = useNavigate();
@@ -15,26 +19,21 @@ const FormContact = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    getValues
   } = useForm<any>({
     resolver: yupResolver(schema),
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  const isLoading = useSelector((state: RootState) => state.common.showLoader)
+  const dispatch = useDispatch()
 
-  useEffect(() => {
-    console.log('errors: ', errors);
-  }, [errors])
-
-  const [photo, setPhoto] = useState('');
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const onSubmit: SubmitHandler<any> = async (data) => {
-    console.log('submit: ', data);
+  const onSubmit: SubmitHandler<any> = async () => {
     await setMessage('Are You Sure To Save?');
     await handleOpen();
   }
@@ -45,29 +44,28 @@ const FormContact = () => {
       return;
     }
 
-    await setIsLoading(true);
-    const response = await postContact(null);// ganti ke obj
-    if (response.message) {
+    const values = getValues();
+    dispatch(toggleLoader(true));
+
+    const response = await postContact(values) as any;
+    if (response?.status === HttpStatusCode.Created) {
       await setMessage('Successully Added, this message will disappear in 2 seconds');
       setTimeout(async () => {
         await handleClose();
-        await setIsLoading(false);
+        dispatch(toggleLoader(false));
         navigate('/');
       }, 2000)
+      return;
     }
 
-    await setIsLoading(false);
-    reset();
+    await handleClose();
+    alert('Error');// ganti sama modal
+    dispatch(toggleLoader(false));
   }
 
   const handleCancel = async () => {
     await setMessage('Are You Sure?');
     await handleOpen();
-  }
-
-  const handleSetPhoto = (e: any) => {
-    const objectUrl = URL.createObjectURL(e.target.files[0]);
-    setPhoto(objectUrl);
   }
 
   return (
@@ -97,23 +95,7 @@ const FormContact = () => {
             <Typography variant="caption" display="block" gutterBottom color='error'>
               {errors?.age?.message as any}
             </Typography>
-            <input type="file" id="photo" placeholder="Photo" {...register("photo")} onChange={(e: any) => handleSetPhoto(e)} />
-            <Typography variant="caption" display="block" gutterBottom color='error'>
-              {errors?.photo?.message as any}
-            </Typography>
-            {photo && <Box
-              component="img"
-              sx={{
-                height: 233,
-                width: 350,
-                maxHeight: { xs: 233, md: 167 },
-                maxWidth: { xs: 350, md: 250 },
-                objectFit: 'contain',
-                backgroundColor: '#636363'
-              }}
-              src={photo}
-              alt='Preview'
-            />}
+            <TextField id="photo" label="Photo" variant="outlined" {...register("photo")} />
             <Stack direction="row" spacing={2}>
               <Button variant="contained" type="submit" sx={{ width: '100px' }}>Save</Button>
               <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleCancel}>Cancel</Button>

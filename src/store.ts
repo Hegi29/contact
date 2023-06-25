@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 
-import contactReducer from './redux/slice/contactSlice'
+import commonReducer from './redux/slice/commonSlice'
 
 export const store = configureStore({
   reducer: {
-    contact: contactReducer
+    common: commonReducer
   }
 })
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

@@ -1,20 +1,15 @@
-import { METHOD, URL_API } from "../constants";
+import axios from "axios";
 
-const postContact = (body: any) => {
+import { URL_API } from "../constants";
+
+const postContact = async (param: any) => {
   const url = `${URL_API}/contact`;
-  const options = {
-    method: METHOD.POST,
-    body
-  };
 
-  return fetch(url, options)
-    .then(response => response.json())
-    .then(json => {
-      return json;
-    })
-    .catch(error => {
-      console.error(error);// bikin modal
-    });
+  try {
+    return await axios.post(url, param);
+  } catch (error) {
+    return error;
+  }
 };
 
 export default postContact
