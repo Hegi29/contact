@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Stack, Button, Box, TextField, Typography } from '@mui/material';
+import { Stack, Button, Box, TextField, Typography, CircularProgress } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { ListContactProps } from '../types/ListContactProps';
@@ -11,6 +11,7 @@ import { getContactByID } from '../api/getContact';
 import KeepMountedModal from '../components/modal';
 import ListContactHeader from './ListContactHeader';
 import schema from '../schemas/contact';
+import putContact from '../api/putContact';
 
 const DetailContact = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const DetailContact = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<any>({
     resolver: yupResolver(schema),
@@ -28,13 +30,20 @@ const DetailContact = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [photo, setPhoto] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const callGetContactDetail = async () => {
+    await setIsLoading(true);
     const response = await getContactByID(id) as any;
-    setData(response.data);
+    setValue('firstName', response.data.firstName);
+    setValue('lastName', response.data.lastName);
+    setValue('age', response.data.age);
+    setPhoto(response.data.photo);
+    await setData(response.data);
+    await setIsLoading(false);
   }
 
   useEffect(() => {
@@ -42,7 +51,6 @@ const DetailContact = () => {
   }, [])
 
   const onSubmit: SubmitHandler<any> = async (data) => {
-    console.log('submit: ', data);
     await setMessage('Are You Sure To Save?');
     await handleOpen();
   }
@@ -53,12 +61,18 @@ const DetailContact = () => {
       return;
     }
 
-    await setMessage('Successully Updated, this message will disappear in 2 seconds');
-    setTimeout(async () => {
-      // disini panggil api save
-      await handleClose();
-      navigate('/');
-    }, 2000)
+    await setIsLoading(true);
+    const response = await putContact(null);// ganti ke obj
+    if (response.message) {
+      await setMessage('Successully Updated, this message will disappear in 2 seconds');
+      setTimeout(async () => {
+        await handleClose();
+        await setIsLoading(false);
+        navigate('/');
+      }, 2000)
+    }
+
+    await setIsLoading(false);
   }
 
   const handleCancel = async () => {
@@ -83,7 +97,8 @@ const DetailContact = () => {
         }}
       >
         <ListContactHeader title="Edit Contact" />
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {isLoading && <CircularProgress />}
+        {!isLoading && <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <TextField id="first-name" label="First Name" variant="outlined" {...register("firstName")} />
             <Typography variant="caption" display="block" gutterBottom color='error'>
@@ -119,7 +134,7 @@ const DetailContact = () => {
               <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleCancel}>Cancel</Button>
             </Stack>
           </Stack>
-        </form>
+        </form>}
       </Box>
     </>
   )

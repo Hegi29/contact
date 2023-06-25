@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Stack, Button, Box, TextField, Typography } from '@mui/material';
+import { Stack, Button, Box, TextField, Typography, CircularProgress } from '@mui/material';
 import { yupResolver } from "@hookform/resolvers/yup";
 
 import schema from '../schemas/contact';
 import KeepMountedModal from '../components/modal';
 import ListContactHeader from './ListContactHeader';
+import postContact from '../api/postContact';
 
 const FormContact = () => {
   const navigate = useNavigate();
@@ -18,6 +19,8 @@ const FormContact = () => {
   } = useForm<any>({
     resolver: yupResolver(schema),
   });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     console.log('errors: ', errors);
@@ -42,10 +45,18 @@ const FormContact = () => {
       return;
     }
 
-    await setMessage('Successully Added, this message will disappear in 2 seconds');
-    setTimeout(async () => {
-      await handleClose();
-    }, 2000)
+    await setIsLoading(true);
+    const response = await postContact(null);// ganti ke obj
+    if (response.message) {
+      await setMessage('Successully Added, this message will disappear in 2 seconds');
+      setTimeout(async () => {
+        await handleClose();
+        await setIsLoading(false);
+        navigate('/');
+      }, 2000)
+    }
+
+    await setIsLoading(false);
     reset();
   }
 
@@ -71,7 +82,8 @@ const FormContact = () => {
         }}
       >
         <ListContactHeader title="Add New Contact" />
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {isLoading && <CircularProgress />}
+        {!isLoading && <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <TextField id="first-name" label="First Name" variant="outlined" {...register("firstName")} />
             <Typography variant="caption" display="block" gutterBottom color='error'>
@@ -107,7 +119,7 @@ const FormContact = () => {
               <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleCancel}>Cancel</Button>
             </Stack>
           </Stack>
-        </form>
+        </form>}
       </Box>
     </>
   )
