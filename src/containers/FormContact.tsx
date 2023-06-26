@@ -10,7 +10,8 @@ import schema from '../schemas/contact';
 import KeepMountedModal from '../components/modal';
 import ListContactHeader from './ListContactHeader';
 import postContact from '../api/postContact';
-import { toggleLoader } from '../redux/slice/commonSlice';
+import { toggleLoader, toggleModal } from '../redux/slice/commonSlice';
+import { ResponseNetwork } from '../types/ResponseNetwork';
 import { RootState } from '../store';
 
 const FormContact = () => {
@@ -24,15 +25,20 @@ const FormContact = () => {
     resolver: yupResolver(schema),
   });
 
-  const isLoading = useSelector((state: RootState) => state.common.showLoader)
-  const dispatch = useDispatch()
+  const isLoading = useSelector((state: RootState) => state.common.showLoader);
+  const open = useSelector((state: RootState) => state.common.showModal);
+  const dispatch = useDispatch();
 
-  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    dispatch(toggleModal(true));
+  }
+
+  const handleClose = () => {
+    dispatch(toggleModal(false));
+  }
 
   const onSubmit: SubmitHandler<any> = async () => {
     await setTitle('Confirmation');
@@ -49,7 +55,7 @@ const FormContact = () => {
     const values = getValues();
     dispatch(toggleLoader(true));
 
-    const response = await postContact(values) as any;
+    const response = await postContact(values) as ResponseNetwork;
     if (response?.status === HttpStatusCode.Created) {
       await setTitle('Info');
       await setMessage('Successully added, this message will disappear in 2 seconds');

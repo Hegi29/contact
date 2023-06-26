@@ -1,31 +1,38 @@
 import { HttpStatusCode } from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, IconButton, Paper, Stack, Table, TableBody, TableContainer, TableHead, TableRow, Tooltip } from '@mui/material';
 import { Edit as EditIcon, DeleteForever as DeleteForeverIcon } from '@mui/icons-material';
 
 import deleteContact from '../api/deleteContact';
-import { toggleLoader } from '../redux/slice/commonSlice';
+import { toggleLoader, toggleModal } from '../redux/slice/commonSlice';
+import { ListContactProps } from '../types/ListContactProps';
+import { ResponseNetwork } from '../types/ResponseNetwork';
 import { StyledTableCell, StyledTableRow } from './style';
 import KeepMountedModal from './modal';
-import { ListContactProps } from '../types/ListContactProps';
+import { RootState } from '../store';
 
 export type DataTableProps = { list: ListContactProps[], startNo: number };
 
 export default function DataTable({ list, startNo }: DataTableProps) {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const open = useSelector((state: RootState) => state.common.showModal);
 
-  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [idDelete, setIDDelete] = useState('');
   const [srcPhoto, setSrcPhoto] = useState('');
   const [modalType, setModalType] = useState('');
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    dispatch(toggleModal(true));
+  }
+
+  const handleClose = () => {
+    dispatch(toggleModal(false));
+  }
 
   const handleEdit = (id: string) => {
     navigate('/edit', { state: { id } });
@@ -35,12 +42,11 @@ export default function DataTable({ list, startNo }: DataTableProps) {
     await setIDDelete(id);
     await setTitle('Confirmation');
     await setMessage(`Are You Sure to Delete ${name}?`);
-    await setOpen(true);
+    await handleOpen();
   }
 
   const handleYes = async () => {
-    const response = await deleteContact(idDelete) as any;
-    console.log('response :', response);
+    const response = await deleteContact(idDelete) as ResponseNetwork;
 
     if (response?.status === HttpStatusCode.Created || response?.status === HttpStatusCode.Ok) {
       await setMessage('Successully Deleted, this message will disappear in 2 seconds');
@@ -63,7 +69,7 @@ export default function DataTable({ list, startNo }: DataTableProps) {
     await setTitle('');
     await setModalType('photo');
     await setSrcPhoto(src);
-    await setOpen(true);
+    await handleOpen();
   }
 
   return (

@@ -13,8 +13,9 @@ import putContact from '../api/putContact';
 import KeepMountedModal from '../components/modal';
 import ListContactHeader from './ListContactHeader';
 import schema from '../schemas/contact';
+import { toggleLoader, toggleModal } from '../redux/slice/commonSlice';
+import { ResponseNetwork } from '../types/ResponseNetwork';
 import { RootState } from '../store';
-import { toggleLoader } from '../redux/slice/commonSlice';
 
 const DetailContact = () => {
   const navigate = useNavigate();
@@ -30,15 +31,20 @@ const DetailContact = () => {
     resolver: yupResolver(schema),
   });
 
-  const isLoading = useSelector((state: RootState) => state.common.showLoader)
-  const dispatch = useDispatch()
+  const isLoading = useSelector((state: RootState) => state.common.showLoader);
+  const open = useSelector((state: RootState) => state.common.showModal);
+  const dispatch = useDispatch();
 
-  const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    dispatch(toggleModal(true));
+  }
+
+  const handleClose = () => {
+    dispatch(toggleModal(false));
+  }
 
   const mappingValue = (response: any) => {
     setValue('firstName', response?.data?.data?.firstName);
@@ -49,7 +55,7 @@ const DetailContact = () => {
 
   const callGetContactDetail = async () => {
     dispatch(toggleLoader(true));
-    const response = await getContactByID(id) as any;
+    const response = await getContactByID(id) as ResponseNetwork;
     mappingValue(response);
     dispatch(toggleLoader(false));
   }
@@ -61,7 +67,7 @@ const DetailContact = () => {
   const onSubmit: SubmitHandler<any> = async () => {
     await setTitle('Confirmation');
     await setMessage('Are you sure to save this changes?');
-    await handleOpen();
+    dispatch(toggleModal(true));
   }
 
   const handleYes = async () => {
@@ -73,7 +79,7 @@ const DetailContact = () => {
     dispatch(toggleLoader(true));
 
     const values = getValues();
-    const response = await putContact(values, id) as any;
+    const response = await putContact(values, id) as ResponseNetwork;
     if (response?.status === HttpStatusCode.Created) {
       await setTitle('Info');
       await setMessage('Successully updated, this message will disappear in 2 seconds');
