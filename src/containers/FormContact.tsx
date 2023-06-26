@@ -48,7 +48,7 @@ const FormContact = () => {
 
   const handleYes = async () => {
     if (message === 'Are you sure?') {
-      navigate('/');
+      navigate('/', { replace: true });
       return;
     }
 
@@ -62,7 +62,7 @@ const FormContact = () => {
       setTimeout(async () => {
         await handleClose();
         dispatch(toggleLoader(false));
-        navigate('/');
+        navigate('/', { replace: true });
       }, 2000)
       return;
     }

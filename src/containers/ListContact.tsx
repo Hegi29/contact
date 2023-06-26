@@ -8,12 +8,12 @@ import { getContact } from '../api/getContact';
 import { ListContactProps } from '../types/ListContactProps';
 import DataTable from '../components/table';
 import { RootState } from '../store';
-import '../App.css';
+// import '../App.css';
 
 const PAGE_SIZE = 10;
 
 const ListContact = () => {
-  const isLoading = useSelector((state: RootState) => state.common.showLoader)
+  const isLoading = useSelector((state: RootState) => state.common.showLoader);
 
   const [list, setList] = useState<ListContactProps[]>([]);
   const [totalData, setTotalData] = useState(0);

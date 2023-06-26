@@ -75,7 +75,7 @@ export default function DataTable({ list, startNo }: DataTableProps) {
   return (
     <>
       <KeepMountedModal title={title} message={message} open={open} handleClose={handleClose} handleYes={handleYes} srcPhoto={srcPhoto} modalType={modalType} />
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} data-testid="table-list">
         <Table sx={{ minWidth: 650 }} aria-label="list contact table">
           <TableHead>
             <TableRow>

@@ -17,7 +17,7 @@ const ListContactHeader = ({ title, showButton = false }: ListContcatHeaderProps
         <Grid item xs={12} sm container>
           <Grid item xs container direction="column" spacing={2} />
           <Grid item>
-            <Button variant="contained" type="submit" onClick={() => navigate('/add')}>Add New Contact</Button>
+            <Button variant="contained" type="submit" onClick={() => navigate('/add', { replace: true })}>Add New Contact</Button>
           </Grid>
         </Grid>
       }
