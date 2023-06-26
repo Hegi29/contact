@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Stack, Button, Box, TextField, Typography, CircularProgress } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import { ListContactProps } from '../types/ListContactProps';
 import { getContactByID } from '../api/getContact';
 import putContact from '../api/putContact';
 import KeepMountedModal from '../components/modal';
@@ -34,7 +33,6 @@ const DetailContact = () => {
   const isLoading = useSelector((state: RootState) => state.common.showLoader)
   const dispatch = useDispatch()
 
-  const [, setData] = useState<ListContactProps>();
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -52,7 +50,6 @@ const DetailContact = () => {
     dispatch(toggleLoader(true));
     const response = await getContactByID(id) as any;
     mappingValue(response);
-    await setData(response.data);
     dispatch(toggleLoader(false));
   }
 
@@ -86,7 +83,8 @@ const DetailContact = () => {
     }
 
     await handleClose();
-    alert('Error');// ganti sama modal
+    await setMessage('Error');
+    await handleOpen();
     dispatch(toggleLoader(false));
   }
 

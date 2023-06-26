@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Grid, Typography } from "@mui/material"
 
-const ListContactHeader = ({ title, showButton = false }: any) => {
+export type ListContcatHeaderProps = { title?: string, showButton?: boolean }
+
+const ListContactHeader = ({ title, showButton = false }: ListContcatHeaderProps) => {
   const navigate = useNavigate();
 
   return (

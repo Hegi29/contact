@@ -54,7 +54,7 @@ export default function KeepMountedModal({ message, open, handleClose, handleYes
     >
       <Box sx={styleModal}>
         {modalType !== 'photo' && <NonPhoto message={message} handleYes={handleYes} handleClose={handleClose} />}
-        {modalType === 'photo' && <Photo srcPhoto={srcPhoto} />}
+        {modalType === 'photo' && <Photo srcPhoto={srcPhoto ?? ''} />}
       </Box>
     </Modal>
   );

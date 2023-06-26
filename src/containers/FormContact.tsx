@@ -59,7 +59,8 @@ const FormContact = () => {
     }
 
     await handleClose();
-    alert('Error');// ganti sama modal
+    await setMessage('Error');
+    await handleOpen();
     dispatch(toggleLoader(false));
   }
 
