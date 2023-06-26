@@ -1,20 +1,16 @@
 import { Avatar, Box, Button, Modal, Stack, Typography } from '@mui/material';
 
 import { styleModal } from './style';
+import { ModalProps, NonPhotoProps, PhotoProps } from '../types/Modal';
 
-export type NonPhotoProps = { message: string, handleYes: () => void, handleClose: () => void }
-export type ModalProps = { message: string, open: boolean, handleClose: () => void, handleYes: () => void, srcPhoto?: string, modalType?: string }
-export type PhotoProps = { srcPhoto: string };
-
-const NonPhoto = ({ message, handleYes, handleClose }: any) => {
+const NonPhoto = ({ title, message, handleYes, handleClose }: NonPhotoProps) => {
   return (
     <>
       <Typography id="modal-title" variant="h6" component="h2" textAlign='center'>
-        Confirmation
+        <strong>{title}</strong>
       </Typography>
       <Typography id="modal-description" sx={{ mt: 2 }} textAlign='center'>
         {message}
-        {/* // Are you sure to make changes to this data? */}
       </Typography>
       <Stack
         direction="row"
@@ -23,9 +19,13 @@ const NonPhoto = ({ message, handleYes, handleClose }: any) => {
         justifyContent="center"
         alignItems="center"
         mt={5}>
-        <Button variant="contained" type="submit" sx={{ width: '100px' }} onClick={handleYes}>Yes</Button>
-        <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleClose}>No</Button>
-        {/* <Button variant="contained" type="submit" sx={{ width: '100px' }} onClick={handleOK}>OK</Button> */}
+        {title === 'Confirmation' && <>
+          <Button variant="contained" type="submit" sx={{ width: '100px' }} onClick={handleYes}>Yes</Button>
+          <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleClose}>No</Button>
+        </>}
+        {title !== 'Confirmation' && <>
+          <Button variant="contained" type="submit" sx={{ width: '100px' }} onClick={handleClose}>OK</Button>
+        </>}
       </Stack>
     </>
   )
@@ -43,7 +43,7 @@ const Photo = ({ srcPhoto }: PhotoProps) => {
   )
 }
 
-export default function KeepMountedModal({ message, open, handleClose, handleYes, srcPhoto, modalType }: ModalProps) {
+export default function KeepMountedModal({ title, message, open, handleClose, handleYes, srcPhoto, modalType }: ModalProps) {
   return (
     <Modal
       keepMounted
@@ -53,7 +53,7 @@ export default function KeepMountedModal({ message, open, handleClose, handleYes
       aria-describedby="modal-description"
     >
       <Box sx={styleModal}>
-        {modalType !== 'photo' && <NonPhoto message={message} handleYes={handleYes} handleClose={handleClose} />}
+        {modalType !== 'photo' && <NonPhoto title={title} message={message} handleYes={handleYes} handleClose={handleClose} />}
         {modalType === 'photo' && <Photo srcPhoto={srcPhoto ?? ''} />}
       </Box>
     </Modal>

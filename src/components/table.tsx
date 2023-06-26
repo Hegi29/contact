@@ -18,11 +18,13 @@ export default function DataTable({ list, startNo }: DataTableProps) {
   const dispatch = useDispatch()
 
   const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
   const [idDelete, setIDDelete] = useState('');
   const [srcPhoto, setSrcPhoto] = useState('');
   const [modalType, setModalType] = useState('');
 
+  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const handleEdit = (id: string) => {
@@ -31,25 +33,34 @@ export default function DataTable({ list, startNo }: DataTableProps) {
 
   const handleDelete = async (id: string, name: string) => {
     await setIDDelete(id);
+    await setTitle('Confirmation');
     await setMessage(`Are You Sure to Delete ${name}?`);
     await setOpen(true);
   }
 
   const handleYes = async () => {
     const response = await deleteContact(idDelete) as any;
+    console.log('response :', response);
 
     if (response?.status === HttpStatusCode.Created || response?.status === HttpStatusCode.Ok) {
       await setMessage('Successully Deleted, this message will disappear in 2 seconds');
       setTimeout(async () => {
-        await setOpen(false);
+        await handleClose();
         dispatch(toggleLoader(false));
         navigate('/');
       }, 2000)
       return;
     }
+
+    await handleClose();
+    await setTitle('Error');
+    await setMessage(response.message);
+    await handleOpen();
+    dispatch(toggleLoader(false));
   }
 
   const handlePreviewPhoto = async (src: string) => {
+    await setTitle('');
     await setModalType('photo');
     await setSrcPhoto(src);
     await setOpen(true);
@@ -57,7 +68,7 @@ export default function DataTable({ list, startNo }: DataTableProps) {
 
   return (
     <>
-      <KeepMountedModal message={message} open={open} handleClose={handleClose} handleYes={handleYes} srcPhoto={srcPhoto} modalType={modalType} />
+      <KeepMountedModal title={title} message={message} open={open} handleClose={handleClose} handleYes={handleYes} srcPhoto={srcPhoto} modalType={modalType} />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="list contact table">
           <TableHead>

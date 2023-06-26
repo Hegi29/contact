@@ -28,12 +28,14 @@ const FormContact = () => {
   const dispatch = useDispatch()
 
   const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const onSubmit: SubmitHandler<any> = async () => {
+    await setTitle('Confirmation');
     await setMessage('Are you sure to save this changes?');
     await handleOpen();
   }
@@ -49,6 +51,7 @@ const FormContact = () => {
 
     const response = await postContact(values) as any;
     if (response?.status === HttpStatusCode.Created) {
+      await setTitle('Info');
       await setMessage('Successully added, this message will disappear in 2 seconds');
       setTimeout(async () => {
         await handleClose();
@@ -59,19 +62,21 @@ const FormContact = () => {
     }
 
     await handleClose();
-    await setMessage('Error');
+    await setTitle('Error');
+    await setMessage(response.message);
     await handleOpen();
     dispatch(toggleLoader(false));
   }
 
   const handleCancel = async () => {
-    await setMessage('Are You Sure?');
+    await setTitle('Confirmation');
+    await setMessage('Are you sure?');
     await handleOpen();
   }
 
   return (
     <>
-      <KeepMountedModal message={message} open={open} handleClose={handleClose} handleYes={handleYes} />
+      <KeepMountedModal title={title} message={message} open={open} handleClose={handleClose} handleYes={handleYes} />
       <Box
         sx={{
           width: '50%',
@@ -96,7 +101,10 @@ const FormContact = () => {
             <Typography variant="caption" display="block" gutterBottom color='error'>
               {errors?.age?.message as any}
             </Typography>
-            <TextField id="photo" label="Photo" variant="outlined" {...register("photo")} />
+            <TextField id="photo" label="URL Photo" variant="outlined" {...register("photo")} />
+            <Typography variant="caption" display="block" gutterBottom color='error'>
+              {errors?.photo?.message as any}
+            </Typography>
             <Stack direction="row" spacing={2}>
               <Button variant="contained" type="submit" sx={{ width: '100px' }}>Save</Button>
               <Button variant="contained" type="button" color="error" sx={{ width: '100px' }} onClick={handleCancel}>Cancel</Button>
