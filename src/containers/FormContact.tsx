@@ -48,6 +48,7 @@ const FormContact = () => {
 
   const handleYes = async () => {
     if (message === 'Are you sure?') {
+      handleClose();
       navigate('/', { replace: true });
       return;
     }
