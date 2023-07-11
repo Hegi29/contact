@@ -98,19 +98,19 @@ const FormContact = () => {
           <Stack spacing={2}>
             <TextField id="first-name" label="First Name" variant="outlined" {...register("firstName")} />
             <Typography variant="caption" display="block" gutterBottom color='error'>
-              {errors?.firstName?.message as any}
+              {errors?.firstName?.message as string}
             </Typography>
             <TextField id="last-name" label="Last Name" variant="outlined" {...register("lastName")} />
             <Typography variant="caption" display="block" gutterBottom color='error'>
-              {errors?.lastName?.message as any}
+              {errors?.lastName?.message as string}
             </Typography>
             <TextField id="age" type="number" label="Age" variant="outlined" {...register("age")} />
             <Typography variant="caption" display="block" gutterBottom color='error'>
-              {errors?.age?.message as any}
+              {errors?.age?.message as string}
             </Typography>
             <TextField id="photo" label="URL Photo" variant="outlined" {...register("photo")} />
             <Typography variant="caption" display="block" gutterBottom color='error'>
-              {errors?.photo?.message as any}
+              {errors?.photo?.message as string}
             </Typography>
             <Stack direction="row" spacing={2}>
               <Button variant="contained" type="submit" sx={{ width: '100px' }}>Save</Button>

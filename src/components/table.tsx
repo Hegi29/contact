@@ -25,6 +25,7 @@ export default function DataTable({ list, startNo }: DataTableProps) {
   const [idDelete, setIDDelete] = useState('');
   const [srcPhoto, setSrcPhoto] = useState('');
   const [modalType, setModalType] = useState('');
+  const [initName, setInitName] = useState('');
 
   const handleOpen = () => {
     dispatch(toggleModal(true));
@@ -65,16 +66,17 @@ export default function DataTable({ list, startNo }: DataTableProps) {
     dispatch(toggleLoader(false));
   }
 
-  const handlePreviewPhoto = async (src: string) => {
+  const handlePreviewPhoto = async (src: string, name: string) => {
     await setTitle('');
     await setModalType('photo');
     await setSrcPhoto(src);
     await handleOpen();
+    await setInitName(name);
   }
 
   return (
     <>
-      <KeepMountedModal title={title} message={message} open={open} handleClose={handleClose} handleYes={handleYes} srcPhoto={srcPhoto} modalType={modalType} />
+      <KeepMountedModal title={title} message={message} open={open} handleClose={handleClose} handleYes={handleYes} srcPhoto={srcPhoto} modalType={modalType} initName={initName} />
       <TableContainer component={Paper} data-testid="table-list">
         <Table sx={{ minWidth: 650 }} aria-label="list contact table">
           <TableHead>
@@ -101,7 +103,7 @@ export default function DataTable({ list, startNo }: DataTableProps) {
                   cursor: 'pointer'
                 }}>
                   <Tooltip title='Click to preview'>
-                    <Avatar src={row.photo} alt={row.firstName} sx={{ width: 56, height: 56 }} onClick={() => handlePreviewPhoto(row.photo)} />
+                    <Avatar src={row.photo} alt={row.firstName} sx={{ width: 56, height: 56 }} onClick={() => handlePreviewPhoto(row.photo, row.firstName)} />
                   </Tooltip>
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.firstName}</StyledTableCell>

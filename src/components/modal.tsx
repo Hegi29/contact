@@ -1,7 +1,7 @@
 import { Avatar, Box, Button, Modal, Stack, Typography } from '@mui/material';
 
-import { styleModal } from './style';
 import { ModalProps, NonPhotoProps, PhotoProps } from '../types/Modal';
+import { styleModal } from './style';
 
 const NonPhoto = ({ title, message, handleYes, handleClose }: NonPhotoProps) => {
   return (
@@ -31,19 +31,19 @@ const NonPhoto = ({ title, message, handleYes, handleClose }: NonPhotoProps) => 
   )
 }
 
-const Photo = ({ srcPhoto }: PhotoProps) => {
+const Photo = ({ srcPhoto, initName }: PhotoProps) => {
   return (
     <Box sx={{
       display: "flex",
       justifyContent: "center",
       alignItems: "center"
     }}>
-      <Avatar src={srcPhoto} alt='photo preview' sx={{ width: 200, height: 200 }} variant="square" />
+      <Avatar src={srcPhoto} alt={initName} sx={{ width: 200, height: 200 }} variant="square" />
     </Box>
   )
 }
 
-export default function KeepMountedModal({ title, message, open, handleClose, handleYes, srcPhoto, modalType }: ModalProps) {
+export default function KeepMountedModal({ title, message, open, handleClose, handleYes, srcPhoto, modalType, initName }: ModalProps) {
   return (
     <Modal
       keepMounted
@@ -54,7 +54,7 @@ export default function KeepMountedModal({ title, message, open, handleClose, ha
     >
       <Box sx={styleModal}>
         {modalType !== 'photo' && <NonPhoto title={title} message={message} handleYes={handleYes} handleClose={handleClose} />}
-        {modalType === 'photo' && <Photo srcPhoto={srcPhoto ?? ''} />}
+        {modalType === 'photo' && <Photo srcPhoto={srcPhoto ?? ''} initName={initName} />}
       </Box>
     </Modal>
   );
